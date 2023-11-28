@@ -15,6 +15,16 @@ class UserController extends Controller
     {
         return User::all();
     }
+    public function index_user()
+    {
+        $user = User::query();
+        return $user->where('role', '=', 'user')->get();
+    }
+    public function index_shipper()
+    {
+        $user = User::query();
+        return $user->where('role', '=', 'shipper')->get();
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -82,6 +92,10 @@ class UserController extends Controller
     public function destroy($id)
     {
         try {
+            $user = User::find($id);
+            $token = explode('/', $user->imgurl);
+            $public_ID = explode(".", $token[sizeof($token) - 1]);
+            Cloudinary::destroy($public_ID[0]);
             return User::destroy($id);
         } catch (\Exception $e) {
             // delete new image uploaded

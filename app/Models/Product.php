@@ -6,6 +6,7 @@ use App\Models\Product_category;
 use App\Models\Order_details;
 use App\Models\Comment;
 use App\Models\User;
+use App\Models\Product_size;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ class Product extends Model implements Explored
         'name',
         'brand',
         'imgurl',
+        'color',
         'description',
         'origional_price',
         'sale_price',
@@ -55,6 +57,10 @@ class Product extends Model implements Explored
     public function productComments(): HasMany
     {
         return $this->hasMany(Comment::class, 'product_id');
+    }
+    public function productSize(): HasMany
+    {
+        return $this->hasMany(Product_size::class, 'product_id');
     }
     public function productOderDetails()
     {

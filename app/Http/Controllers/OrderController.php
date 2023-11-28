@@ -25,7 +25,8 @@ class OrderController extends Controller
 
         try {
             $fiels = $request->validate([
-                'total_price' => 'required',
+                'total_payment' => 'required',
+                'total_product_cost' => 'required',
                 'cus_id' => 'required',
                 'shipping_fee' => 'required',
                 'note' => 'required|string',
@@ -38,7 +39,8 @@ class OrderController extends Controller
                 'payment_status' => 'required|string',
                 'confirm_by' => '',
                 'update_by' => '',
-                'shipper_id' => ''
+                'shipper_id' => '',
+                'est_arr_date' => '',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->getMessage(), 'errors' => $e->errors()], 422);

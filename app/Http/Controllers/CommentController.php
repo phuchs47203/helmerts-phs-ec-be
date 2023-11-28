@@ -61,8 +61,9 @@ class CommentController extends Controller
      */
     public function show(string $id)
     {
-        $comment = Comment::find($id);
-        return  $comment->productComments;
+        //get all comment belongs to product há product_id
+        $product = Product::find($id);
+        return  $product->productComments;
     }
 
     /**

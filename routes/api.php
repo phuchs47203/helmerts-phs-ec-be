@@ -6,12 +6,14 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDetailController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductSizeController;
 use App\Http\Controllers\UserController;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Fruitcake\Cors\CorsMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,9 +29,10 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 Route::get('/products/main-product/{id}', [ProductController::class, 'main_product']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+// Route::get('/products-size-of-product/{id}', [ProductController::class, 'show']);
+Route::get('/products/interested/{catId}', [ProductController::class, 'interested_product']);
 Route::post('/products/filter', [ProductController::class, 'filters']);
 Route::post('/products', [ProductController::class, 'store']);
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::post('/products/update/{id}', [ProductController::class, 'update']);
 
 // Route::put('/products/{id}', [ProductController::class, 'update']);
@@ -53,6 +56,14 @@ Route::get('/comments/{id}', [CommentController::class, 'show']);
 Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 Route::post('/comments/{id}', [CommentController::class, 'update']);
 
+Route::post('/product-size', [ProductSizeController::class, 'store']);
+Route::get('/product-size', [ProductSizeController::class, 'index']);
+Route::get('/product-size/{id}', [ProductSizeController::class, 'show']);
+Route::get('/product-list-size/{id}', [ProductSizeController::class, 'showProductSize']);
+Route::delete('/product-size/{id}', [ProductSizeController::class, 'destroy']);
+Route::post('/product-size/{id}', [ProductSizeController::class, 'update']);
+
+
 Route::post('/order-details', [OrderDetailController::class, 'store']);
 Route::get('/order-details', [OrderDetailController::class, 'index']);
 Route::get('/order-details/{id}', [OrderDetailController::class, 'show']);
@@ -60,7 +71,7 @@ Route::delete('/order-details/{id}', [OrderDetailController::class, 'destroy']);
 Route::post('/order-details/{id}', [OrderDetailController::class, 'update']);
 
 
-Route::get('/users', [UserController::class, 'index']);
+// Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
 Route::post('/users/{id}', [UserController::class, 'update']);
@@ -83,9 +94,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     // Route::post('/logout', [AuthController::class, 'logout']);
     // Route::post('/users', [UserController::class, 'show']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users-user', [UserController::class, 'index_user']);
+    Route::get('/users-shipper', [UserController::class, 'index_shipper']);
 
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+});
+Route::get('/csrf-token', function () {
+    return response()->json(['csrfToken' => csrf_token()]);
+});
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

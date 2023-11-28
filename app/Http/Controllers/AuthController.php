@@ -12,7 +12,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
             'phone_number' => 'string',
@@ -28,7 +29,8 @@ class AuthController extends Controller
         $imgurl = Cloudinary::upload($request->file('imgurl')->getRealPath())->getSecurePath();
         // return ($imgurl);
         $user = User::create([
-            'name' => $fields['name'],
+            'first_name' => $fields['first_name'],
+            'last_name' => $fields['last_name'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password']),
             'phone_number' => $fields['phone_number'],
@@ -52,7 +54,8 @@ class AuthController extends Controller
     public function register_shipper(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
             'phone_number' => 'string',
@@ -68,8 +71,8 @@ class AuthController extends Controller
         $imgurl = Cloudinary::upload($request->file('imgurl')->getRealPath())->getSecurePath();
         // return ($imgurl);
         $user = User::create([
-            'name' => $fields['name'],
-            'email' => $fields['email'],
+            'first_name' => $fields['first_name'],
+            'last_name' => $fields['last_name'],
             'password' => bcrypt($fields['password']),
             'phone_number' => $fields['phone_number'],
             'country' => $fields['country'],
@@ -92,7 +95,8 @@ class AuthController extends Controller
     public function register_manager(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
             'phone_number' => 'string',
@@ -108,7 +112,8 @@ class AuthController extends Controller
         $imgurl = Cloudinary::upload($request->file('imgurl')->getRealPath())->getSecurePath();
         // return ($imgurl);
         $user = User::create([
-            'name' => $fields['name'],
+            'first_name' => $fields['first_name'],
+            'last_name' => $fields['last_name'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password']),
             'phone_number' => $fields['phone_number'],

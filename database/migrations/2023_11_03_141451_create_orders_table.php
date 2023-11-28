@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('total_price');
+            $table->bigInteger('total_payment');
+            $table->bigInteger('total_product_cost');
             $table->foreignId('cus_id')
                 ->nullable()
                 ->constrained(
@@ -31,7 +32,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('district');
             $table->string('address_Details');
-            $table->string('state');
+            $table->string('status');
             $table->string('payment_status');
             $table->foreignId('confirm_by')
                 ->nullable()
@@ -57,6 +58,7 @@ return new class extends Migration
                 )
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
+            $table->date('est_arr_date');
             $table->timestamps();
         });
     }

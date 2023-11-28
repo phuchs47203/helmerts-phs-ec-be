@@ -12,7 +12,8 @@ class Order extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'total_price',
+        'total_payment',
+        'total_product_cost',
         'cus_id',
         'shipping_fee',
         'note',
@@ -21,11 +22,12 @@ class Order extends Model
         'city',
         'district',
         'address_details',
-        'state',
+        'status',
         'payment_status',
         'confirm_by',
         'update_by',
-        'shipper_id'
+        'shipper_id',
+        'est_arr_date'
     ];
     public function orders()
     {
@@ -43,7 +45,7 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'shipper_id');
     }
-    public function detailsOrder():HasMany
+    public function detailsOrder(): HasMany
     {
         return $this->hasMany(Order_details::class, 'order_id');
     }

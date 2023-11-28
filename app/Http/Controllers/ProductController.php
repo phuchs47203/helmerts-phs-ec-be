@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Product_size;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -19,10 +20,53 @@ class ProductController extends Controller
      */
     public function index()
     {
+
+        $this->makeDBConsistent();
+
+        // Product::query()->update([
+        //     'discount' => DB::raw('discount  * 0.01')
+
+        // ]);
+
+        // Product::query()->update([
+        //     'discount' => DB::raw('ROUND(discount, 2)')
+        // ]);
+
+        srand(739);
+        $products = Product::all()->toArray();
+        shuffle($products); // Trộn mảng sản phẩm
+
+        // return $products;
+        // Product::query()->update([
+        //     'discount' => DB::raw('(1 - sale_price/origional_price)*100')
+        // ]);
+
+
+        return $products;
+    }
+
+    // Make the database consistent
+    public function makeDBConsistent()
+    {
         Product::query()->update([
-            'sale_price' => DB::raw('origional_price * (1 - discount)')
+            'sale_price' => DB::raw('origional_price * (1 - discount)'),
+
         ]);
-        return Product::all();
+        // $available = 0;
+        // $sold = 0;
+        // foreach(Product::all() as $product)
+        // {
+        //     return $product->productSize;
+        // }
+
+        // $listSize = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+        // foreach ($listSize as $i) {
+        //     Product_size::create([
+        //         'size' => $i,
+        //         'available' => 0,
+        //         'sold' => 0,
+        //     ]);
+        // }
     }
     /**
      * Display a listing of the resource.
@@ -39,49 +83,33 @@ class ProductController extends Controller
     {
         $product = Product::query();
         if ($id == 1) {
-            return $product->where('sold', '>', 100)->orderBy('sold', 'desc')->limit(6)->get();
+            return $product->orderBy('sold', 'desc')->limit(6)->get();
+
+            // return $product->where('sold', '>', 100)->orderBy('sold', 'desc')->limit(6)->get();
         }
         if ($id == 2) {
-            return $product->where('discount', '>', '0.49')->orderBy('discount', 'desc')->limit(6)->get();
+            return $product->orderBy('discount', 'desc')->limit(6)->get();
+
+            // return $product->where('discount', '>', '0.49')->orderBy('discount', 'desc')->limit(6)->get();
         }
         return "Not found";
     }
 
     public function filters(Request $request)
     {
-        // if ($request->keyword) {
-        //     return $request->keyword;
-        // }
-
-        // $product = Product::query();
-
-        // if ($request->keyword != null) {
-        //     $keyword = $request->input('keyword');
-        //     $products = Product::search($keyword)->paginate();
-        //     $product = $products->items();
-        // } else {
-        //     // Không có keyword, thực hiện truy vấn và lấy mảng dữ liệu
-        //     $product = $product->get()->toArray();
-        // }
-
-        // // return $product;
-
-
-        // if ($request->cat_id >= 1 && $request->cat_id <= 7) {
-        //     $product = $product->where('cat_id', '=', $request->cat_id);
-        // }
-
         $productQuery = Product::query();
 
         if ($request->keyword != null) {
             $keyword = $request->input('keyword');
-            $products = Product::search($keyword)->paginate();
-            $productData = $products->items(); // Lưu trữ dữ liệu tìm kiếm
+            // $products = Product::search($keyword)->paginate();
+            $products = $productQuery->where('name', 'like', '%' . $keyword . '%')
+                ->orWhere('description', 'like', '%' . 'gsj' . '%');
+            // ->orWhere('name', 'like', '%' . Input::get('name') . '%')->get();
+            $productData = $products->get(); // Lưu trữ dữ liệu tìm kiếm
         } else {
             // Không có keyword, thực hiện truy vấn và lấy mảng dữ liệu
             $productData = $productQuery->get()->toArray();
         }
-
 
         $productQuery = Product::query()->tap(function ($query) use ($productData) {
             // Sử dụng dữ liệu từ tìm kiếm để thêm điều kiện vào truy vấn SQL
@@ -100,24 +128,25 @@ class ProductController extends Controller
         if ($request->all) {
             // hot: sold
             if ($request->all == 1) {
-                $productQuery = $productQuery->where('sold', '>', '100');
+                $productQuery = $productQuery->where('sold', '>', '20');
             }
             // discount --> flash sale 
             if ($request->all == 2) {
-                $productQuery = $productQuery->where('discount', '>', '0.49');
+                $productQuery = $productQuery->where('discount', '>', '0.15');
             }
         }
-        if ($request->sort >= 1 && $request->sort <= 4) {
+        if ($request->sort >= 0 && $request->sort <= 3) {
             switch ($request->sort) {
+                case 0:
+                    $productQuery = $productQuery->orderBy('sold', 'desc');
+                    break;
                 case 1:
+                    $productQuery = $productQuery->orderBy('sale_price', 'desc');
                     break;
                 case 2:
                     $productQuery = $productQuery->orderBy('sale_price', 'asc');
                     break;
                 case 3:
-                    $productQuery = $productQuery->orderBy('sale_price', 'desc');
-                    break;
-                case 4:
                     $now = Carbon::now();
                     $twoMonthsAgo = $now->subMonths(2);
                     // $oneMonthAgo = $now->subMonth(1);
@@ -138,11 +167,21 @@ class ProductController extends Controller
 
     }
 
+    // relative product
+    public function interested_product($catId)
+    {
+        $products = Product::query();
+        return $products->where('cat_id', '=', $catId)
+            ->orderBy('sold', 'desc')
+            ->limit(8)->get();
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+
         try {
             $fields = $request->validate([
                 'name' => 'required|string',
@@ -156,7 +195,8 @@ class ProductController extends Controller
                 'sold' => 'required|string',
                 'cat_id' => 'required|string',
                 'create_by' => 'required|string',
-                'update_by' => 'required|string'
+                'update_by' => 'required|string',
+                'color' => 'required|string',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->getMessage(), 'errors' => $e->errors()], 422);
@@ -174,8 +214,21 @@ class ProductController extends Controller
             'sold' => $fields['sold'],
             'cat_id' => $fields['cat_id'],
             'create_by' => $fields['create_by'],
-            'update_by' => $fields['update_by']
+            'update_by' => $fields['update_by'],
+            'color' => $fields['color'],
+
         ]);
+        $listSize = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+        foreach ($listSize as $i) {
+            Product_size::create([
+                'size' => $i,
+                'available' => 0,
+                'sold' => 0,
+                'product_id' => $product['id'],
+            ]);
+        }
+
+
         return response($product, 201);
     }
 
@@ -236,6 +289,13 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
+        $product = Product::find($id);
+        $token = explode('/', $product->imgurl);
+        $public_ID = explode(".", $token[sizeof($token) - 1]);
+        Cloudinary::destroy($public_ID[0]);
+        DB::table('product_sizes')->where('product_id', $id)->delete();
+
+
         return Product::destroy($id);
     }
 }
