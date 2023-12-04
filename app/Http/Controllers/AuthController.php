@@ -22,7 +22,8 @@ class AuthController extends Controller
             'district' => 'required|string',
             'address_details' => 'required|string',
             'imgurl' => 'image|required',
-            'dateofbirth' => 'date'
+            'dateofbirth' => 'date',
+            'title' => 'required|string',
         ]);
         // $imgurl = Cloudinary::upload(($fields['imgurl'])->getRealPath())->getSecurePath();
 
@@ -41,6 +42,7 @@ class AuthController extends Controller
             'imgurl' => $imgurl,
             'role' => 'user',
             'dateofbirth' => $fields['dateofbirth'],
+            'title' => $fields['title'],
         ]);
 
         $token = $user->createToken('myapptoken')->plainTextToken;
@@ -64,7 +66,8 @@ class AuthController extends Controller
             'district' => 'required|string',
             'address_details' => 'required|string',
             'imgurl' => 'image|required',
-            'dateofbirth' => 'date'
+            'dateofbirth' => 'date',
+            'title' => 'required|string',
         ]);
         // $imgurl = Cloudinary::upload(($fields['imgurl'])->getRealPath())->getSecurePath();
 
@@ -82,6 +85,7 @@ class AuthController extends Controller
             'imgurl' => $imgurl,
             'role' => 'shipper',
             'dateofbirth' => $fields['dateofbirth'],
+            'title' => $fields['title'],
         ]);
 
         $token = $user->createToken('myapptoken')->plainTextToken;
@@ -105,7 +109,8 @@ class AuthController extends Controller
             'district' => 'required|string',
             'address_details' => 'required|string',
             'imgurl' => 'image|required',
-            'dateofbirth' => 'date'
+            'dateofbirth' => 'date',
+            'title' => 'required|string',
         ]);
         // $imgurl = Cloudinary::upload(($fields['imgurl'])->getRealPath())->getSecurePath();
 
@@ -124,6 +129,7 @@ class AuthController extends Controller
             'imgurl' => $imgurl,
             'role' => 'manager',
             'dateofbirth' => $fields['dateofbirth'],
+            'title' => $fields['title'],
         ]);
 
         $token = $user->createToken('myapptoken')->plainTextToken;

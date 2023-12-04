@@ -22,14 +22,15 @@ class OrderDetailController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             $fields = $request->validate([
                 'order_id' => 'required',
                 'product_id' => 'required',
                 'note' => '',
                 'amount' => 'required',
-                'sale_price' => 'required'
+                'sale_price' => 'required',
+                'size_name' => 'required|string',
+                'size_id' => 'required',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->getMessage(), 'errors' => $e->errors()], 422);
@@ -39,7 +40,9 @@ class OrderDetailController extends Controller
             'product_id' => $fields['product_id'],
             'note' => $fields['note'],
             'amount' => $fields['amount'],
-            'sale_price' => $fields['sale_price']
+            'sale_price' => $fields['sale_price'],
+            'size_name' => $fields['size_name'],
+            'size_id' => $fields['size_id'],
         ]);
         $response = [
             'order_details' => $order_details

@@ -34,6 +34,15 @@ return new class extends Migration
                 ->nullable();
             $table->integer('amount');
             $table->bigInteger('sale_price');
+            $table->string('size_name');
+            $table->foreignId('size_id')
+                ->nullable()
+                ->constrained(
+                    'product_sizes',
+                    'id'
+                )
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }

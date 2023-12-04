@@ -32,7 +32,8 @@ class Product extends Model implements Explored
         'sold',
         'cat_id',
         'create_by',
-        'update_by'
+        'update_by',
+        'design_by'
     ];
     public function mappableAs(): array
     {

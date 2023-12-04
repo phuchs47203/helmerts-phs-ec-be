@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class OrderController extends Controller
 {
@@ -13,7 +15,9 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return Order::all();
+        // return Order::all();
+        $order = Order::query();
+        return $order->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -24,7 +28,7 @@ class OrderController extends Controller
 
 
         try {
-            $fiels = $request->validate([
+            $fields = $request->validate([
                 'total_payment' => 'required',
                 'total_product_cost' => 'required',
                 'cus_id' => 'required',
@@ -35,17 +39,31 @@ class OrderController extends Controller
                 'city' => 'required|string',
                 'district' => 'required|string',
                 'address_details' => 'required|string',
-                'state' => 'required|string',
-                'payment_status' => 'required|string',
-                'confirm_by' => '',
-                'update_by' => '',
-                'shipper_id' => '',
-                'est_arr_date' => '',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->getMessage(), 'errors' => $e->errors()], 422);
         }
-        $order = Order::create($request->all());
+        $now = Carbon::now();
+        $newDate = $now->addDays(5);
+        $newDateString = $newDate->toDateString();
+        $order = Order::create([
+            'total_payment' => $fields['total_payment'],
+            'total_product_cost' => $fields['total_product_cost'],
+            'cus_id' => $fields['cus_id'],
+            'shipping_fee' => $fields['shipping_fee'],
+            'note' => $fields['note'],
+            'phone_number' => $fields['phone_number'],
+            'country' => $fields['country'],
+            'city' => $fields['city'],
+            'district' => $fields['district'],
+            'address_details' => $fields['address_details'],
+            'status' => 'Pending',
+            'payment_status' => 'Not Paid',
+            'confirm_by' => null,
+            'update_by' => null,
+            'shipper_id' => null,
+            'est_arr_date' => $newDateString,
+        ]);
         $response = [
             'order' => $order
         ];
@@ -60,6 +78,12 @@ class OrderController extends Controller
         return Order::find($id);
     }
 
+    public function showOrderUser(string $id)
+    {
+        $user = User::find($id);
+        $orders = $user->orders()->orderBy('created_at', 'desc')->get();
+        return $orders;
+    }
     /**
      * Update the specified resource in storage.
      */

@@ -49,6 +49,8 @@ Route::get('/orders', [OrderController::class, 'index']);
 Route::get('/orders/{id}', [OrderController::class, 'show']);
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 Route::post('/orders/{id}', [OrderController::class, 'update']);
+// showOrderUser
+Route::get('/orders-user/{id}', [OrderController::class, 'showOrderUser']);
 
 Route::post('/comments', [CommentController::class, 'store']);
 Route::get('/comments', [CommentController::class, 'index']);

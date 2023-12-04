@@ -197,6 +197,7 @@ class ProductController extends Controller
                 'create_by' => 'required|string',
                 'update_by' => 'required|string',
                 'color' => 'required|string',
+                'design_by' => 'required|string',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->getMessage(), 'errors' => $e->errors()], 422);
@@ -216,7 +217,7 @@ class ProductController extends Controller
             'create_by' => $fields['create_by'],
             'update_by' => $fields['update_by'],
             'color' => $fields['color'],
-
+            'design_by' => $fields['design_by'],
         ]);
         $listSize = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
         foreach ($listSize as $i) {
@@ -227,8 +228,6 @@ class ProductController extends Controller
                 'product_id' => $product['id'],
             ]);
         }
-
-
         return response($product, 201);
     }
 

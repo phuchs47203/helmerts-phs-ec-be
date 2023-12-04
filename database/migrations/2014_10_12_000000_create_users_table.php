@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('address_details');
             $table->string('imgurl');
             $table->string('role');
+            $table->string('title');
             $table->rememberToken();
             $table->timestamps();
         });

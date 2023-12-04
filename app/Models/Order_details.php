@@ -16,14 +16,30 @@ class Order_details extends Model
         'product_id',
         'note',
         'amount',
-        'sale_price'
+        'sale_price',
+        'size_name',
+        'size_id'
     ];
-    public function productOderDetails(): HasOne
-    {
-        return $this->hasOne(Product::class, 'product_id', 'id');
-    }
+
     public function detailsOrder()
     {
-        return $this->belongsTo(Order::class, 'order_id');
+        return $this->belongsTo(Order::class, 'order_id', 'id');
+    }
+    // public function productOderDetails(): HasOne
+    // {
+    //     return $this->hasOne(Product::class, 'product_id', 'id');
+    // }
+    // public function orderDetailSize(): HasOne
+    // {
+    //     return $this->hasOne(Product_size::class, 'size_id');
+    // }
+
+    public function productOderDetails()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+    public function orderDetailSize()
+    {
+        return $this->belongsTo(Product_size::class, 'size_id', 'id');
     }
 }
