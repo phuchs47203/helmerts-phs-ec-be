@@ -84,6 +84,79 @@ class OrderController extends Controller
         $orders = $user->orders()->orderBy('created_at', 'desc')->get();
         return $orders;
     }
+
+
+    public function showUserBelongToShipper(string $id)
+    {
+        $order = Order::query();
+        return $order->where('shipper_id', '=', $id)->orderBy('created_at', 'desc')->get();
+    }
+
+    public function confirmOrderByShipper(string $order_id)
+    {
+        $order = Order::find($order_id);
+        $fields = [
+            'status' => 'Completed',
+            'payment_status' => 'Paid',
+            'update_by' => $order['shipper_id'],
+            'note' => 'Finished',
+        ];
+        $order->update($fields);
+        return $order;
+    }
+    public function confirmOrderByManger(string $order_id, Request $request)
+    {
+        $order = Order::find($order_id);
+        $fields = [
+            'status' => 'Shipped',
+            'payment_status' => 'Not Paid',
+            'update_by' => $request['manager_id'],
+            'confirm_by' => $request['manager_id'],
+            'shipper_id' => $request['shipper_id'],
+            'note' => 'Shipping',
+        ];
+        $order->update($fields);
+        return $order;
+    }
+
+
+    public function cancelOrderByUser(string $order_id, Request $request)
+    {
+        $order = Order::find($order_id);
+        $fields = [
+            'status' => 'Canceled',
+            'payment_status' => 'Not Paid',
+            'note' => 'User: ' . $order['cus_id'] . '. Canceled Reason: ' . $request['note'],
+            'update_by' => $order['cus_id'],
+        ];
+        $order->update($fields);
+        return $order;
+    }
+    public function cancelOrderByShipper(string $order_id, Request $request)
+    {
+        $order = Order::find($order_id);
+        $fields = [
+            'status' => 'Canceled',
+            'payment_status' => 'Not Paid',
+            'note' => 'Shipper: ' . $order['shipper_id'] . '. Canceled Reason: ' . $request['note'],
+            'update_by' => $order['shipper_id'],
+        ];
+        $order->update($fields);
+        return $order;
+    }
+    public function cancelOrderByManager(string $manager_id, string $order_id, Request $request)
+    {
+        $order = Order::find($order_id);
+        $fields = [
+            'status' => 'Canceled',
+            'payment_status' => 'Not Paid',
+            'note' => 'Manager: ' . $manager_id . '. Canceled Reason: ' . $request['note'],
+            'update_by' => $manager_id,
+        ];
+        $order->update($fields);
+        return $order;
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -96,7 +169,10 @@ class OrderController extends Controller
         $order->update($request->all());
         return $order;
     }
-
+    public function updateQuantityWhenFinished()
+    {
+        return;
+    }
     /**
      * Remove the specified resource from storage.
      */

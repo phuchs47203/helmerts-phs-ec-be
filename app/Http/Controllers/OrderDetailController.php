@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Order_details;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -56,6 +57,32 @@ class OrderDetailController extends Controller
     public function show(string $id)
     {
         return Order_details::find($id);
+    }
+
+    public function showOrderDetails(string $id)
+    {
+        $order = Order::find($id);
+        $order_details = $order->detailsOrder()->get();
+        $listOrderDetails = [];
+        foreach ($order_details as $key) {
+            $product = Product::find($key['product_id']);
+            $listOrderDetails[] = [
+                'imgurl' => $product['imgurl'],
+                'name' => $product['name'],
+                'color' => $product['color'],
+                'quantity' => $key['amount'],
+                'sale_price' => $key['sale_price'],
+                'size_name' => $key['size_name'],
+                'size_id' => $key['size_id'],
+                'id' => $key['id'],
+                'order_id' => $key['order_id'],
+                'product_id' => $key['product_id'],
+
+            ];
+        }
+        return $listOrderDetails;
+        // return response()->json($listOrderDetails);
+
     }
 
     /**

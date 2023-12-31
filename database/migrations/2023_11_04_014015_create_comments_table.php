@@ -29,7 +29,15 @@ return new class extends Migration
                 )
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
-            $table->integer('star');
+            $table->foreignId('order_id')
+                ->nullable()
+                ->constrained(
+                    'orders',
+                    'id'
+                )
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->integer('star')->nullable();
             $table->string('content');
             $table->string('imgurl')->nullable();
             $table->timestamps();

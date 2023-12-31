@@ -74,6 +74,7 @@ class AuthController extends Controller
         $imgurl = Cloudinary::upload($request->file('imgurl')->getRealPath())->getSecurePath();
         // return ($imgurl);
         $user = User::create([
+            'email' => $fields['email'],
             'first_name' => $fields['first_name'],
             'last_name' => $fields['last_name'],
             'password' => bcrypt($fields['password']),

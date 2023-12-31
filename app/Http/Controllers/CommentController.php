@@ -7,6 +7,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\Comment;
 use App\Models\Product;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Models\Order;
 
 class CommentController extends Controller
 {
@@ -28,7 +29,8 @@ class CommentController extends Controller
             $fields = $request->validate([
                 'cus_id' => 'required',
                 'product_id' => 'required',
-                'star' => 'required',
+                'order_id' => 'required',
+                'star' => '',
                 'content' => 'required|string',
                 'imgurl' => 'image'
             ]);
@@ -40,6 +42,7 @@ class CommentController extends Controller
             $comment = Comment::create([
                 'cus_id' => $fields['cus_id'],
                 'product_id' => $fields['product_id'],
+                'order_id' => $fields['order_id'],
                 'star' => $fields['star'],
                 'content' => $fields['content'],
                 'imgurl' => $imgurl
@@ -49,13 +52,34 @@ class CommentController extends Controller
         $comment = Comment::create([
             'cus_id' => $fields['cus_id'],
             'product_id' => $fields['product_id'],
+            'order_id' => $fields['order_id'],
             'star' => $fields['star'],
             'content' => $fields['content'],
             'imgurl' => null
         ]);
-        return response($comment, 201);
     }
 
+    public function storeAll(Request $request)
+    {
+        $comments = Comment::query();
+        $lisComment = $comments->where('order_id', '=', $request['order_id'])->get();
+
+        if ($lisComment->isNotEmpty()) {
+            return $lisComment;
+        }
+        $order = Order::find($request['order_id']);
+        $order_details = $order->detailsOrder()->get();
+        foreach ($order_details as $key) {
+            $fields = [
+                'content' => $request['content'],
+                'order_id' => $request['order_id'],
+                'cus_id' => $order['cus_id'],
+                'product_id' => $key['product_id'],
+                'star' => 4,
+            ];
+            $this->store(new Request($fields));
+        }
+    }
     /**
      * Display the specified resource.
      */

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Order_details;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -48,5 +49,9 @@ class Order extends Model
     public function detailsOrder(): HasMany
     {
         return $this->hasMany(Order_details::class, 'order_id');
+    }
+    public function orderComments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'order_id');
     }
 }

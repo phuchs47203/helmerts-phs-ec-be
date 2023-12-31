@@ -44,13 +44,16 @@ class ProductController extends Controller
 
         return $products;
     }
-
+    public function indexNewest()
+    {
+        $product = Product::query();
+        return $product->orderBy('created_at', 'desc')->get();
+    }
     // Make the database consistent
     public function makeDBConsistent()
     {
         Product::query()->update([
             'sale_price' => DB::raw('origional_price * (1 - discount)'),
-
         ]);
         // $available = 0;
         // $sold = 0;
